@@ -19,3 +19,8 @@ Now head to `user_stories/user_stories/settings.py` and add/update the following
 * `EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")`
 * `EMAIL_USE_TLS = True`
 
+# Github OAuth integration
+To setup Github OAuth for you app, please head to github and create a new application [here](https://github.com/settings/applications/new). Once a new application has been created, proceed to generate a new client scecret for your app as well. Be sure to take note of the `Client ID` & the `Client Secret` you generated.
+Now we need to set the ENV variables, so open command prompt, activate the virtual env and run `set SOCIAL_AUTH_GITHUB_KEY=<THE_GITHUB_CLIENT_ID>` and then `set SOCIAL_AUTH_GITHUB_SECRET=<THE_GITHUB_CLIENT_SECRETS>`
+
+If you set the vairables properly then people should now be able to login via Github
