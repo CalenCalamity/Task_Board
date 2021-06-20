@@ -5,11 +5,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" integrity="sha256-qM7QTJSlvtPSxVRjVWNM2OfTAz/3k5ovHOKmKXuYMO4=" crossorigin="anonymous"></script>
     <style>
         body {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 1000%;
-            animation: gradient 15s ease infinite;
+            background-color: #85CDCA;
+            align-items: stretch;
         }
 
+        .container {
+            background-color: #E8A77C;
+            padding: 1%;
+
+            top: 0;
+            left: 0;
+            height: inherit;
+            width: inherit;
+            max-width: none;
+            margin: 1%;
+        }
+
+        .card {
+            background-color: #3FB2A1;
+        }
+        
         @keyframes gradient {
             0% {
                 background-position: 0% 50%;
@@ -27,14 +42,40 @@
   <body class="dashboard">
     <nav class="navbar navbar-light">
         <div class="container-fluid">
-          <a class="navbar-brand">User Stories</a>
-          <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-            <a class="btn btn-outline-success" href="{% url 'logout' %}">Logout</a>
-            <a class="btn btn-outline-success" href="{% url 'password_change' %}">Change password</a>
+            <a class="navbar-brand">User Stories</a>
+            <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+                <a class="btn btn-outline-success" href="{% url 'logout' %}">Logout</a>
+                <a class="btn btn-outline-success" href="{% url 'password_change' %}">Change password</a>
           </form>
         </div>
     </nav>
+    <div class="container">
+        {% for card in tasks %}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{ card.task_title }}</h5>
+                <p class="card-text">{{ card.description }}</p>
+            </div>
+            <ol class="list-group list-group-flush">
+                <li class="list-group-item">Created: {{ card.created_by.email }}</li>
+                <li class="list-group-item">Assigned: {{ card.assigned_user_email }}</li>
+                <li class="list-group-item">A third item</li>
+            </ol>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <button id="{{card.id}}" type="submit" name="Assign" value="{{card.id}}" class="btn btn-primary">Assign</button><!-- TODO: This needs to have a popup modal -->
+                    <button id="{{card.id}}" type="submit" name="action" value="Update" class="btn btn-warning">Edit</button>
+                    <button id="{{card.id}}" type="submit" name="action" value="Delete" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Launch demo modal
+                      </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
   </body>
 {% endblock %}
