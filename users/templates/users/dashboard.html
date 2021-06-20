@@ -1,18 +1,40 @@
 <!--users/templates/users/dashboard.html-->
-
 {% extends 'base.html' %}
-
 {% block content %}
-Hello, {{ user.username|default:'Guest' }}!
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" integrity="sha256-qM7QTJSlvtPSxVRjVWNM2OfTAz/3k5ovHOKmKXuYMO4=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 1000%;
+            animation: gradient 15s ease infinite;
+        }
 
-<div>
-    {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>
-        <a href="{% url 'password_change' %}">Change password</a>
-    {% else %}
-    <a href="{% url 'login' %}">Login</a>
-    <a href="{% url 'register' %}">Register</a>
-    {% endif %}
-</div>
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
 
+  <body class="dashboard">
+    <nav class="navbar navbar-light">
+        <div class="container-fluid">
+          <a class="navbar-brand">User Stories</a>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+            <a class="btn btn-outline-success" href="{% url 'logout' %}">Logout</a>
+            <a class="btn btn-outline-success" href="{% url 'password_change' %}">Change password</a>
+          </form>
+        </div>
+    </nav>
+  </body>
 {% endblock %}

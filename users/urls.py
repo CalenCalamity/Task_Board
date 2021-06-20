@@ -1,11 +1,12 @@
 # users/urls.py
 
 from django.conf.urls import url, include
-from users.views import dashboard, register
+from users.views import dashboard, register, base
 
 urlpatterns = [
     url(r"^dashboard/", dashboard, name="dashboard"),
     url(r"^accounts/", include("django.contrib.auth.urls")),
     url(r"^register/", register, name="register"),
     url(r"^oauth/", include("social_django.urls")),
+    url(r"^", base, name="base"),
 ]

@@ -4,7 +4,13 @@ from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from users.forms import CustomUserCreationForm
+from django.contrib.auth.decorators import login_required
 
+@login_required
+def base(request):
+    return render(request, "users/dashboard.html")
+
+@login_required
 def dashboard(request):
     return render(request, "users/dashboard.html")
 
