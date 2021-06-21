@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" integrity="sha256-qM7QTJSlvtPSxVRjVWNM2OfTAz/3k5ovHOKmKXuYMO4=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 1000%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+
+  <body class="dashboard">
+    <nav class="navbar navbar-light">
+        <div class="container-fluid">
+          <a class="navbar-brand">User Stories</a>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+            <a class="btn btn-outline-success" href="{% url 'logout' %}">Logout</a>
+            <a class="btn btn-outline-success" href="{% url 'password_change' %}">Change password</a>
+          </form>
+        </div>
+    </nav>
+  </body> -->
+
+    <div class="mw6 center pa3 sans-serif">
+        <h1 class="mb4">Driver: {{ drivers.name | linebreaks }}</h1>
+        <header class="b mb2">License: {{ drivers.license }}</header>
+        {% for v in vehicles %}
+        <div class="pa2 mb3 striped--near-white">
+            <div class="pl2">
+                <p class="mb2">Make/Model: {{ v.make }} {{ v.model }}</p>
+                <p class="mb2">Year: {{ v.year }}</p>
+                <p class="mb2">Vin: {{ v.vin }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

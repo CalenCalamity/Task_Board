@@ -7,8 +7,33 @@ from users.forms import CustomUserCreationForm
 from django.contrib.auth.decorators import login_required
 from users.models import AuthUser, Task, Comment
 
-from django.http import HttpResponse, JsonResponse 
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse 
 from datetime import date
+
+from .forms import EditTaskForm, UserForm
+
+
+def index(request):
+    submitbutton= request.POST.get("submit")
+
+    firstname=''
+    lastname=''
+    emailvalue=''
+
+    form= UserForm(request.POST or None)
+    if form.is_valid():
+        firstname= form.cleaned_data.get("first_name")
+        lastname= form.cleaned_data.get("last_name")
+        emailvalue= form.cleaned_data.get("email")
+
+
+    context= {'form': form, 'firstname': firstname, 'lastname':lastname,
+              'submitbutton': submitbutton, 'emailvalue':emailvalue}
+        
+    return render(request, 'users/register.html', context)
+
+
+# --------------------- Form Funct11ions ---------------------
 
 # --------------------- Page Functions ---------------------
 
@@ -22,13 +47,15 @@ def dashboard(request):
         return render(request, "users/dashboard.html", task_data())
     elif request.method == "POST":
         if request.POST['Assign'] != None:
-            task_id = request.POST['Assign']
-            context = '{ "data": ' + request.POST['Assign'] + '}'
-            user_email = 'testdata'
+            context = { "data": request.POST['Assign'] }
+            return render(request, "tasks/edit_task.html", context)
+            # task_id = request.POST['Assign']
+            # context = '{ "data": ' + request.POST['Assign'] + '}'
+            # user_email = 'testdata'
 
-            task_assign_user(task_id, user_email, request.user);
+            # task_assign_user(task_id, user_email, request.user);
             
-            return HttpResponse(context, content_type="application/json")
+            # return HttpResponse(context, content_type="application/json")
 
         elif request.POST['Update'] != None:
             task_id = request.POST['Update']
@@ -50,6 +77,15 @@ def dashboard(request):
             task_delete(task_id, request.user)
 
             return HttpResponse('{"data": "Delete"}', content_type="application/json")
+
+
+# @login_required
+# def edit_task(request):
+#     if request.method == "GET":
+#         # task_data(request.)
+#         return render(request, "tasks/edit_task.html")
+#     # elif request.method == "POST":
+        
 
 def register(request):
     if request.method == "GET":
@@ -112,23 +148,53 @@ def task_delete(task_id, logged_in_user):
 
     task.save()
 
-def task_new(logged_in_user):
+def task_new(task_title, priority, due_date, description, assigned_email, is_complete, logged_in_user):
     task = Task.objects.create(
-        name='Corporate',
-        address='624 Broadway',
-        city='San Diego',
-        state='CA',
-        email='corporate@coffeehouse')
+        task_title = task_title,
+        priority = priority,
+        due_date = due_date,
+        description = description,
+        assigned_user_email = assigned_email,
+        is_complete = is_complete,
+        is_deleted = False,
+        created_by = logged_in_user,
+        last_modified_by_email = logged_in_user.email,
+        created_date = date.today(),
+        last_modified_date = date.today())
     
     # If successful, record reference has id 
     return task.id
     
-# ----- Task Helpers
+# ----- Comments Helpers
 def comment_data(task):
     return { 'comments': Comment.objects.filter(task=task) }
 
-def comment_edit(task, user):
+def comment_edit(task, user, new_text):
+    comment = Comment.objects.filter(task=task)
+
+    comment.message = new_text
+    comment.last_modified_by_email = user.email
+    comment.last_modified_date = date.today()
+
+    comment.save()
 
 def comment_delete(task, user):
+    comment = Comment.objects.filter(task=task)
 
-def comment_new(logged_in_user):
+    comment.is_deleted = True
+    comment.last_modified_by_email = user.email
+    comment.last_modified_date = date.today()
+
+    comment.save()
+
+def comment_new(task, assigned_user_email, message, logged_in_user):
+    comment = Comment.objects.create(task = task,
+        assigned_user_email = assigned_user_email,
+        message = message,
+        is_deleted = False,
+        created_by_email = logged_in_user,
+        last_modified_by_email = logged_in_user,
+        created_date = date.today(),
+        last_modified_date = date.today())
+    
+    return comment.id

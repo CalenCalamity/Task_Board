@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<body>
+
+    <div class="card">
+        <head>
+            <style>
+                .container {
+                    width: 80% !important;
+                    padding-top: 13%;
+                }
+    
+                .card {
+                    border: none !important;
+                }
+
+                .isComplete{
+                    padding-left: 13% !important;
+                }
+            </style>
+            <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+            <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+        </head>
+<!--     
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <aside class="col-sm-4">
+                    <div class="card">
+                        <article class="card-body">
+                            <form method="post" class="row g-3">
+                                {% csrf_token %}
+                                <div class="col-md-12">
+                                    <label for="inputTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="inputTitle">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputPriority" class="form-label">Priority</label>
+                                    <select id="inputPriority" class="form-select">
+                                        <option value="P1" selected>P1</option>
+                                        <option value="P2" >P2</option>
+                                        <option value="P3" >P3</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputDueDate" class="form-label">Due Date</label>
+                                    <input type="date" class="form-control" id="inputDueDate">
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputDescription" class="form-label">Description</label>
+                                    <input type="text" class="form-control" id="inputDescription">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputPriority" class="form-label">Assigned</label>
+                                    <select id="inputPriority" class="form-select">
+                                        {% for user in users %}
+                                            <option value="P1" selected>P1</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch isComplete">
+                                        <input class="form-check-input" type="checkbox" id="gridCheck">
+                                        <label class="form-check-label" for="gridCheck">
+                                            Complete
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <button type="submit" class="btn btn-warning">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                              </form>
+                        </article>
+                    </div>
+                </aside>
+                <div class="col-sm-4"></div>
+            </div>
+        </div>  -->
+        <form method="post">
+            {% csrf_token %}
+            <!-- {{ form.task_title }} -->
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+{% endblock %}
