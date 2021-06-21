@@ -190,9 +190,13 @@ class SocialAuthUsersocialauth(models.Model):
         unique_together = (('provider', 'uid'),)
 
 class Task(models.Model):
+    PRIORITIES = (('P1', 'P1'),
+                  ('P2', 'P2'),
+                  ('P3', 'P3'))
     id = models.BigAutoField(primary_key=True)
     task_title = models.CharField(max_length=80, null=False, blank=False)
-    priority = models.CharField(max_length=2, null=False)
+    priority = models.CharField(max_length=2, null=False, choices=PRIORITIES)
+    # priority = models.CharField(max_length=2, null=False)
     due_date = models.DateTimeField()
     description = models.CharField(max_length=254)
     assigned_user_email = models.CharField(max_length=254)

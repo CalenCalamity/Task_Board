@@ -1,91 +1,82 @@
 # users/views.py
 
 from django.contrib.auth import login
+from django.core.files.base import ContentFile
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.urls.base import reverse_lazy
+from django.views import generic
 from users.forms import CustomUserCreationForm
 from django.contrib.auth.decorators import login_required
 from users.models import AuthUser, Task, Comment
 
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse 
-from datetime import date
+from datetime import datetime
 
-from .forms import EditTaskForm, UserForm
+from .forms import EditTaskForm
 
+# --------------------- Form Functions ---------------------
 
-def index(request):
-    submitbutton= request.POST.get("submit")
+def createTask(request):
+    form = EditTaskForm()
 
-    firstname=''
-    lastname=''
-    emailvalue=''
+    if request.method == 'POST':
+        is_complete = True
+        if 'is_complete' not in str(request.POST):
+            is_complete = False
 
-    form= UserForm(request.POST or None)
-    if form.is_valid():
-        firstname= form.cleaned_data.get("first_name")
-        lastname= form.cleaned_data.get("last_name")
-        emailvalue= form.cleaned_data.get("email")
-
-
-    context= {'form': form, 'firstname': firstname, 'lastname':lastname,
-              'submitbutton': submitbutton, 'emailvalue':emailvalue}
+        Task.objects.create(
+            task_title = request.POST['task_title'],
+            priority = request.POST['priority'],
+            due_date = request.POST['due_date'],
+            description = request.POST['description'],
+            assigned_user_email = request.POST['assigned_user_email'],
+            is_complete = is_complete,
+            is_deleted = False,
+            created_by = AuthUser.objects.filter(email=request.user.email).first(),
+            last_modified_by_email = request.user.email,
+            created_date = datetime.now(),
+            last_modified_date = datetime.now())
+            
+        return redirect(reverse("dashboard"))
         
-    return render(request, 'users/register.html', context)
+    context = { 'form': form, 'ddl_users': AuthUser.objects.all() }
+    return render(request, 'tasks/create_task.html', context)
 
+def editTask(request, pk):
+    task = Task.objects.filter(id=pk).first()
+    form = EditTaskForm(instance=task)
 
-# --------------------- Form Funct11ions ---------------------
+    if request.method == 'POST':
+        task.last_modified_by_email = request.user.email,
+        task.last_modified_date = datetime.now()
+        form = EditTaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse("dashboard"))
+
+    context = { 'form': form, 'ddl_users': AuthUser.objects.all(), 'task_id': pk }
+    return render(request, 'tasks/edit_task.html', context)
+
+def deleteTask(request, pk):
+    task = Task.objects.filter(id=pk).first()
+
+    if request.method == 'POST':
+        task = Task.objects.filter(id=pk).first()
+        task.is_deleted = True
+        task.last_modified_by_email = request.user.email
+        task.last_modified_date = datetime.now()
+
+        task.save()
+
+        return redirect(reverse("dashboard"))
+    
+    return render(request, 'tasks/delete_task.html', { 'item': task })
 
 # --------------------- Page Functions ---------------------
 
 @login_required
-def base(request):
-    return render(request, "users/dashboard.html", task_data())
-
-@login_required
 def dashboard(request):
-    if request.method == "GET":
-        return render(request, "users/dashboard.html", task_data())
-    elif request.method == "POST":
-        if request.POST['Assign'] != None:
-            context = { "data": request.POST['Assign'] }
-            return render(request, "tasks/edit_task.html", context)
-            # task_id = request.POST['Assign']
-            # context = '{ "data": ' + request.POST['Assign'] + '}'
-            # user_email = 'testdata'
-
-            # task_assign_user(task_id, user_email, request.user);
-            
-            # return HttpResponse(context, content_type="application/json")
-
-        elif request.POST['Update'] != None:
-            task_id = request.POST['Update']
-
-            task_edit(task_id,
-                      'task_title', 
-                      'priority',
-                      'due_date',
-                      'description',
-                      'assigned_user_email',
-                      request.user,
-                      'last_modified_date')
-
-            return HttpResponse('{"data": "Update"}', content_type="application/json")
-
-        elif request.POST['Delete'] != "None":
-            task_id = request.POST["Delete"]
-
-            task_delete(task_id, request.user)
-
-            return HttpResponse('{"data": "Delete"}', content_type="application/json")
-
-
-# @login_required
-# def edit_task(request):
-#     if request.method == "GET":
-#         # task_data(request.)
-#         return render(request, "tasks/edit_task.html")
-#     # elif request.method == "POST":
-        
+    return render(request, "users/dashboard.html", task_data(request))
 
 def register(request):
     if request.method == "GET":
@@ -108,62 +99,12 @@ def user_data(email = ""):
     if email == "":
         return { 'users': AuthUser.objects.all() }
     else:
-        return { 'users': AuthUser.objects.get(email=email)}
+        return { 'users': AuthUser.objects.filter(email=email)}
 
 # ----- Task Helpers
-def task_data(id = ""):
-    if id == "":
-        return { 'tasks': Task.objects.all() }
-    else:
-        return { 'tasks': Task.object.get(pk=id) }
-
-def task_assign_user(task_id, user_email, logged_in_user):
-    task = Task.objects.get(id=task_id)
-    
-    task.assigned_user_email = user_email
-    task.last_modified_by_email = logged_in_user
-    task.last_modified_date = date.today()
-
-    task.save()
-
-def task_edit(task_id, task_title, priority, due_date, description, assigned_user_email, logged_in_user, last_modified_date):
-    task = Task.objects.get(id=task_id)
-    
-    task.task_title = task_title
-    task.priority = priority
-    task.due_date = due_date
-    task.description = description
-    task.assigned_user_email = assigned_user_email
-    task.last_modified_by_email = logged_in_user
-    task.last_modified_date = date.today()
-
-    task.save()
-
-def task_delete(task_id, logged_in_user):
-    task = Task.objects.get(id=task_id)
-
-    task.is_deleted = True
-    task.last_modified_by_email = logged_in_user
-    task.last_modified_date = date.today()
-
-    task.save()
-
-def task_new(task_title, priority, due_date, description, assigned_email, is_complete, logged_in_user):
-    task = Task.objects.create(
-        task_title = task_title,
-        priority = priority,
-        due_date = due_date,
-        description = description,
-        assigned_user_email = assigned_email,
-        is_complete = is_complete,
-        is_deleted = False,
-        created_by = logged_in_user,
-        last_modified_by_email = logged_in_user.email,
-        created_date = date.today(),
-        last_modified_date = date.today())
-    
-    # If successful, record reference has id 
-    return task.id
+def task_data(request):
+    combined_queryset = Task.objects.filter(created_by_id=request.user.id, is_deleted=False) | Task.objects.filter(assigned_user_email=request.user.email, is_deleted=False)
+    return { 'tasks': combined_queryset }
     
 # ----- Comments Helpers
 def comment_data(task):
@@ -194,7 +135,7 @@ def comment_new(task, assigned_user_email, message, logged_in_user):
         is_deleted = False,
         created_by_email = logged_in_user,
         last_modified_by_email = logged_in_user,
-        created_date = date.today(),
-        last_modified_date = date.today())
+        created_date = datetime.now(),
+        last_modified_date = datetime.now())
     
     return comment.id

@@ -1,12 +1,16 @@
 # users/urls.py
 
-from django.conf.urls import url, include
-from users.views import dashboard, register, base
+from django.conf.urls import include
+from users import views
+
+from django.urls import path
 
 urlpatterns = [
-    url(r"^dashboard/", dashboard, name="dashboard"),
-    url(r"^accounts/", include("django.contrib.auth.urls")),
-    url(r"^register/", register, name="register"),
-    url(r"^oauth/", include("social_django.urls")),
-    url(r"^", base, name="base"),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("oauth/", include("social_django.urls")),
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("register/", views.register, name="register"),
+    path("create_task/", views.createTask, name="create_task"),
+    path("edit_task/<str:pk>/", views.editTask, name="edit_task"),
+    path("delete_task/<str:pk>/", views.deleteTask, name="delete_task")
 ]
