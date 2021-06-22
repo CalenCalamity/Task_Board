@@ -81,11 +81,11 @@ WSGI_APPLICATION = 'user_stories.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'user_stories',
-        'USER': 'postgres',
-        'PASSWORD': 'karrimore26',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': '<database_name>',
+        'USER': '<database_user>',
+        'PASSWORD': '<database_password>',
+        'HOST': '<database_addrs>',
+        'PORT': '<database_port>'
     }
 }
 
