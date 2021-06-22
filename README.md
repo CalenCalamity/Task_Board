@@ -1,7 +1,11 @@
-# User Stories
+# Get Started
+After cloning the repo, head to the `database` folder in which you will find a postgres db dump (in plain tar format), restore the db. 
+Now navigate to `user_stories/settings.py` and ammend the `DATABASES` section accordingly with your postgresql instance details.
+Note the db is owned by `postgres` and therefore the `DATABASES` values need to be ammended accordingly.
 
-# Users
-The user management project side of the app
+Open a terminal in the root folder and run the following:
+* `python manage.py makemigrations`
+* `python manage.py migrate`
 
 # SMTP 
 (All the terminal commands are ran from within a activated Vitual env)
