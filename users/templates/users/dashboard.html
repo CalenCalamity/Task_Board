@@ -15,7 +15,7 @@
 
             top: 0;
             left: 0;
-            height: inherit;
+            height: 80%;
             width: inherit;
             max-width: none;
             margin: 1%;
@@ -23,6 +23,12 @@
 
         .card {
             background-color: #3FB2A1;
+            margin: 1% !important;
+            margin-right: 0px;
+
+            float:left; 
+            display:inline; 
+            width: 49%;
         }
         
         @keyframes gradient {
@@ -35,6 +41,10 @@
             100% {
                 background-position: 0% 50%;
             }
+        }
+
+        .action-btn {
+            text-align: center;
         }
     </style>
 </head>
@@ -63,9 +73,11 @@
             </ol>
             <div class="card-body">
                 <form method="post">
-                    {% csrf_token %}
-                    <a href="{% url 'edit_task' card.id %}" type="submit" class="btn btn-warning">Edit</a>
-                    <a href="{% url 'delete_task' card.id %}" type="submit" class="btn btn-danger">Delete</a>
+                    <div class="action-btn">
+                        {% csrf_token %}
+                        <a href="{% url 'edit_task' card.id %}" type="submit" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_task' card.id %}" type="submit" class="btn btn-danger">Delete</a>
+                    </div>
                 </form>
             </div>
         </div>

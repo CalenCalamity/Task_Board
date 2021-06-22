@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.forms import widgets
 from users.models import AuthUser, Comment,Task
 
 from django import forms
@@ -7,6 +8,10 @@ from django import forms
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         fields = UserCreationForm.Meta.fields + ("email",)
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username', 'type': 'text', 'id': 'inputUsername'}),
+            'email': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email address', 'type': 'email', 'id': 'inputEmail'}),
+        }
 
 class EditTaskForm(forms.ModelForm):
     class Meta:
