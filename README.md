@@ -6,6 +6,9 @@ Note the db is owned by `postgres` and therefore the `DATABASES` values need to 
 Open a terminal in the root folder and run the following:
 * `python manage.py makemigrations`
 * `python manage.py migrate`
+* `python manage.py runserver`
+
+Your app should now be running, navigate to `http://127.0.0.1:8000/dashboard` (Note `dashboard` attached, it is important), see the `Github OAuth` section of this in order to enable login via GitHub, only manual logins will work till that is setup properly as per below
 
 # SMTP 
 (All the terminal commands are ran from within a activated Vitual env)
