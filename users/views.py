@@ -99,7 +99,6 @@ def deleteComment(request, pk):
 def dashboard(request):
     return render(request, "users/dashboard.html", task_data(request))
 
-@login_required
 def register(request):
     if request.method == "GET":
         return render(
