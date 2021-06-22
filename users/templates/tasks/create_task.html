@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<body>
+    <div class="card">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <aside class="col-sm-4">
+                    <div class="card">
+                        <article class="card-body">
+                            <form action="" method="POST" class="row g-3">
+                                {% csrf_token %}
+                                <div class="col-md-12">
+                                    <label for="inputTitle" class="form-label">Title</label>
+                                    {{ form.task_title }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputPriority" class="form-label">Priority</label>
+                                    {{ form.priority }}
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputDueDate" class="form-label">Due Date</label>
+                                    {{ form.due_date }}
+                                </div>
+                                <div class="col-12">
+                                    <label for="inputDescription" class="form-label">Description</label>
+                                    {{ form.description }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputAssigned" class="form-label">Assign</label>
+                                    {{ form.assigned_user_email }}
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch isComplete">
+                                        {{ form.is_complete }}
+                                        <label class="form-check-label" for="gridCheck">Complete</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <a href="{% url 'dashboard' %}" class="btn btn-warning">Cancel</a>
+                                </div>
+                              </form>
+                        </article>
+                    </div>
+                </aside>
+                <div class="col-sm-4"></div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

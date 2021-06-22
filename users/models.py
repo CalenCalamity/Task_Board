@@ -190,12 +190,16 @@ class SocialAuthUsersocialauth(models.Model):
         unique_together = (('provider', 'uid'),)
 
 class Task(models.Model):
+    PRIORITIES = (('P1', 'P1'),
+                  ('P2', 'P2'),
+                  ('P3', 'P3'))
     id = models.BigAutoField(primary_key=True)
     task_title = models.CharField(max_length=80, null=False, blank=False)
-    priority = models.CharField(max_length=2, null=False)
+    priority = models.CharField(max_length=2, null=False, choices=PRIORITIES)
     due_date = models.DateTimeField()
     description = models.CharField(max_length=254)
     assigned_user_email = models.CharField(max_length=254)
+    is_complete = models.BooleanField()
     is_deleted = models.BooleanField()
     created_by = models.ForeignKey("AuthUser", on_delete=models.SET_NULL, null=True)
     last_modified_by_email = models.CharField(max_length=254)
@@ -211,9 +215,8 @@ class Comment(models.Model):
     task = models.ForeignKey("Task", on_delete=models.SET_NULL, null=True)
     assigned_user_email = models.CharField(max_length=254)
     message = models.CharField(max_length=254)
-    is_complete = models.BooleanField()
     is_deleted = models.BooleanField()
-    created_by_email = models.ForeignKey("AuthUser", on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey("AuthUser", on_delete=models.SET_NULL, null=True)
     last_modified_by_email = models.CharField(max_length=254)
     created_date = models.DateTimeField()
     last_modified_date = models.DateTimeField()
