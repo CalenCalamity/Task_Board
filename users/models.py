@@ -196,7 +196,6 @@ class Task(models.Model):
     id = models.BigAutoField(primary_key=True)
     task_title = models.CharField(max_length=80, null=False, blank=False)
     priority = models.CharField(max_length=2, null=False, choices=PRIORITIES)
-    # priority = models.CharField(max_length=2, null=False)
     due_date = models.DateTimeField()
     description = models.CharField(max_length=254)
     assigned_user_email = models.CharField(max_length=254)

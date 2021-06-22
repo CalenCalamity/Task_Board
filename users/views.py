@@ -1,21 +1,14 @@
-# users/views.py
-
 from django.contrib.auth import login
-from django.core.files.base import ContentFile
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.urls.base import reverse_lazy
-from django.views import generic
 from users.forms import CustomUserCreationForm
 from django.contrib.auth.decorators import login_required
 from users.models import AuthUser, Task, Comment
-
 from datetime import datetime
-
 from .forms import EditCommentForm, EditTaskForm
 
 # --------------------- Form Functions ---------------------
-
+@login_required
 def createTask(request):
     form = EditTaskForm()
 
@@ -42,6 +35,7 @@ def createTask(request):
     context = { 'form': form, 'ddl_users': AuthUser.objects.all() }
     return render(request, 'tasks/create_task.html', context)
 
+@login_required
 def editTask(request, pk):
     task = Task.objects.filter(id=pk).first()
     task_form = EditTaskForm(instance=task)
@@ -75,6 +69,7 @@ def editTask(request, pk):
                 
     return render(request, 'tasks/edit_task.html', context)
 
+@login_required
 def deleteTask(request, pk):
     task = Task.objects.filter(id=pk).first()
 
@@ -90,23 +85,21 @@ def deleteTask(request, pk):
     
     return render(request, 'tasks/delete_task.html', { 'item': task })
 
+@login_required
 def deleteComment(request, pk):
     comment = Comment.objects.filter(id=pk).first()
-    task = Task.objects.filter(id=comment.task.id).first()
-    context = { 'form': EditTaskForm(instance=task), 'comment_form': EditCommentForm(), 'comments': Comment.objects.filter(task=task), 'ddl_users': AuthUser.objects.all(), 'task_id': task.id }
 
     comment.is_deleted = True
-    comment.last_modified_by_email = request.user.email #models.CharField(max_length=254)
-    comment.last_modified_date = datetime.now() # models.DateTimeField()
+    comment.last_modified_by_email = request.user.email
+    comment.last_modified_date = datetime.now()
 
     comment.save()
-
-# --------------------- Page Functions ---------------------
 
 @login_required
 def dashboard(request):
     return render(request, "users/dashboard.html", task_data(request))
 
+@login_required
 def register(request):
     if request.method == "GET":
         return render(
@@ -122,49 +115,8 @@ def register(request):
         login(request, user)
         return redirect(reverse("dashboard"))
 
-# --------------------- Helper Functions ---------------------
-
-def user_data(email = ""):
-    if email == "":
-        return { 'users': AuthUser.objects.all() }
-    else:
-        return { 'users': AuthUser.objects.filter(email=email)}
-
 # ----- Task Helpers
 def task_data(request):
     combined_queryset = Task.objects.filter(created_by_id=request.user.id, is_deleted=False) | Task.objects.filter(assigned_user_email=request.user.email, is_deleted=False)
     return { 'tasks': combined_queryset }
     
-# ----- Comments Helpers
-def comment_data(task):
-    return { 'comments': Comment.objects.filter(task=task) }
-
-def comment_edit(task, user, new_text):
-    comment = Comment.objects.filter(task=task)
-
-    comment.message = new_text
-    comment.last_modified_by_email = user.email
-    comment.last_modified_date = date.today()
-
-    comment.save()
-
-def comment_delete(task, user):
-    comment = Comment.objects.filter(task=task)
-
-    comment.is_deleted = True
-    comment.last_modified_by_email = user.email
-    comment.last_modified_date = date.today()
-
-    comment.save()
-
-def comment_new(task, assigned_user_email, message, logged_in_user):
-    comment = Comment.objects.create(task = task,
-        assigned_user_email = assigned_user_email,
-        message = message,
-        is_deleted = False,
-        created_by_email = logged_in_user,
-        last_modified_by_email = logged_in_user,
-        created_date = datetime.now(),
-        last_modified_date = datetime.now())
-    
-    return comment.id

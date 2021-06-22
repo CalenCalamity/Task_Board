@@ -1,5 +1,3 @@
-# users/urls.py
-
 from django.conf.urls import include
 from users import views
 
