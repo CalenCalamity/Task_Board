@@ -12,7 +12,7 @@ from users.models import AuthUser, Task, Comment
 
 from datetime import datetime
 
-from .forms import EditTaskForm
+from .forms import EditCommentForm, EditTaskForm
 
 # --------------------- Form Functions ---------------------
 
@@ -44,17 +44,35 @@ def createTask(request):
 
 def editTask(request, pk):
     task = Task.objects.filter(id=pk).first()
-    form = EditTaskForm(instance=task)
+    task_form = EditTaskForm(instance=task)
+    context = { 'form': task_form, 'comment_form': EditCommentForm(), 'comments': Comment.objects.filter(task=task, is_deleted=False), 'ddl_users': AuthUser.objects.all(), 'task_id': pk }
+
 
     if request.method == 'POST':
-        task.last_modified_by_email = request.user.email,
-        task.last_modified_date = datetime.now()
-        form = EditTaskForm(request.POST, instance=task)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse("dashboard"))
+        if request.POST['action'] == "Task":
+    
+            task.last_modified_by_email = request.user.email,
+            task.last_modified_date = datetime.now()
+            task_form = EditTaskForm(request.POST, instance=task)
+            if task_form.is_valid():
+                task_form.save()
+                return redirect(reverse("dashboard"))
 
-    context = { 'form': form, 'ddl_users': AuthUser.objects.all(), 'task_id': pk }
+        elif request.POST['action'] == "Comment":
+            Comment.objects.create(
+                task = task,
+                assigned_user_email = task.assigned_user_email,
+                message = request.POST['message'],
+                is_deleted = False,
+                created_by = AuthUser.objects.filter(email=request.user.email).first(),
+                last_modified_by_email = request.user.email,
+                created_date = datetime.now(),
+                last_modified_date = datetime.now())
+            return render(request, 'tasks/edit_task.html', context)
+        
+        elif request.POST['action'] == "Delete":
+            deleteComment(request, request.POST.get('comment_pk'))
+                
     return render(request, 'tasks/edit_task.html', context)
 
 def deleteTask(request, pk):
@@ -71,6 +89,17 @@ def deleteTask(request, pk):
         return redirect(reverse("dashboard"))
     
     return render(request, 'tasks/delete_task.html', { 'item': task })
+
+def deleteComment(request, pk):
+    comment = Comment.objects.filter(id=pk).first()
+    task = Task.objects.filter(id=comment.task.id).first()
+    context = { 'form': EditTaskForm(instance=task), 'comment_form': EditCommentForm(), 'comments': Comment.objects.filter(task=task), 'ddl_users': AuthUser.objects.all(), 'task_id': task.id }
+
+    comment.is_deleted = True
+    comment.last_modified_by_email = request.user.email #models.CharField(max_length=254)
+    comment.last_modified_date = datetime.now() # models.DateTimeField()
+
+    comment.save()
 
 # --------------------- Page Functions ---------------------
 

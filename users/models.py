@@ -217,7 +217,7 @@ class Comment(models.Model):
     assigned_user_email = models.CharField(max_length=254)
     message = models.CharField(max_length=254)
     is_deleted = models.BooleanField()
-    created_by_email = models.ForeignKey("AuthUser", on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey("AuthUser", on_delete=models.SET_NULL, null=True)
     last_modified_by_email = models.CharField(max_length=254)
     created_date = models.DateTimeField()
     last_modified_date = models.DateTimeField()
