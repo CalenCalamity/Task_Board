@@ -1,2 +1,4 @@
+.env
+.venv/
 users/__pycache__/*
 user_stories/__pycache__/*
