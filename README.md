@@ -31,3 +31,5 @@ To setup Github OAuth for you app, please head to github and create a new applic
 Now we need to set the ENV variables, so open command prompt, activate the virtual env and run `set SOCIAL_AUTH_GITHUB_KEY=<THE_GITHUB_CLIENT_ID>` and then `set SOCIAL_AUTH_GITHUB_SECRET=<THE_GITHUB_CLIENT_SECRETS>`
 
 If you set the vairables properly then people should now be able to login via Github
+
+# [Mobile App](https://github.com/CalenCalamity/TaskBoard_App)
